@@ -10,8 +10,9 @@ export function buildProject(id: string) {
     // Create output directory if it doesn't exist
     try {
       fs.mkdirSync(outputPath, { recursive: true });
-    } catch (err) {
-      return reject(new Error(`Failed to create output directory: ${err.message}`));
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      return reject(new Error(`Failed to create output directory: ${errorMessage}`));
     }
 
     // Use spawn instead of exec for better handling of spaces in paths
@@ -23,7 +24,7 @@ export function buildProject(id: string) {
 
     const child = exec(`${npmInstall} && ${npmBuild}`, {
       cwd: outputPath,
-      shell: true
+      shell: '/bin/sh'
     });
 
     child.stdout?.on('data', (data: string) => {
