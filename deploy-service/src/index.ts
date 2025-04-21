@@ -1,8 +1,7 @@
 
 import { createClient, commandOptions } from "redis";
 import { copyFinalDist, downloadS3Folder } from "./aws";
-
-// import { buildProject } from "./utils";
+import { buildProject } from "./utils";
 const subscriber = createClient();
 subscriber.connect();
 
@@ -20,9 +19,9 @@ async function main() {
     const id = res.element
 
     await downloadS3Folder(`output/${id}`)
-    //   await buildProject(id);
-    //  copyFinalDist(id);
-    // publisher.hSet("status", id, "deployed")
+    await buildProject(id);
+    copyFinalDist(id);
+    publisher.hSet("status", id, "deployed")
   }
 }
 main();

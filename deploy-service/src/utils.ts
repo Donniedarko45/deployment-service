@@ -1,21 +1,49 @@
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
+import fs from "fs";
 import path from "path";
 
 export function buildProject(id: string) {
-    return new Promise((resolve) => {
-        const child = exec(`cd ${path.join(__dirname, output/${id})} && npm install && npm run build`)
+  return new Promise((resolve, reject) => {
+    // Use absolute path and normalize it
+    const outputPath = path.resolve(__dirname, 'output', id);
+    
+    // Create output directory if it doesn't exist
+    try {
+      fs.mkdirSync(outputPath, { recursive: true });
+    } catch (err) {
+      return reject(new Error(`Failed to create output directory: ${err.message}`));
+    }
 
-        child.stdout?.on('data', function(data :any) {
-            console.log('stdout: ' + data);
-        });
-        child.stderr?.on('data', function(data:any) {
-            console.log('stderr: ' + data);
-        });
+    // Use spawn instead of exec for better handling of spaces in paths
+    const npmInstall = `npm install`;
+    const npmBuild = `npm run build`;
+    
+    // Change to output directory first
+    process.chdir(outputPath);
 
-        child.on('close', function(code) {
-           resolve("")
-        });
+    const child = exec(`${npmInstall} && ${npmBuild}`, {
+      cwd: outputPath,
+      shell: true
+    });
 
-    })
+    child.stdout?.on('data', (data: string) => {
+      console.log(`[stdout] ${data.trim()}`);
+    });
+    
+    child.stderr?.on('data', (data: string) => {
+      console.log(`[stderr] ${data.trim()}`);
+    });
 
+    child.on('error', (error) => {
+      reject(new Error(`Build process failed: ${error.message}`));
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve("");
+      } else {
+        reject(new Error(`Build process failed with exit code ${code}`));
+      }
+    });
+  });
 }
