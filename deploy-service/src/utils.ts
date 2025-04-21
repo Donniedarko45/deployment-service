@@ -5,10 +5,10 @@ export function buildProject(id: string) {
     return new Promise((resolve) => {
         const child = exec(`cd ${path.join(__dirname, output/${id})} && npm install && npm run build`)
 
-        child.stdout?.on('data', function(data) {
+        child.stdout?.on('data', function(data :any) {
             console.log('stdout: ' + data);
         });
-        child.stderr?.on('data', function(data) {
+        child.stderr?.on('data', function(data:any) {
             console.log('stderr: ' + data);
         });
 
