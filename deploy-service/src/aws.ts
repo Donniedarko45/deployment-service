@@ -61,3 +61,13 @@ const getAllFiles = (folderPath: string) => {
   return response;
 }
 
+
+const uploadFile = async (fileName: string, localFilePath: string) => {
+  const fileContent = fs.readFileSync(localFilePath);
+  const response = await s3.upload({
+    Body: fileContent,
+    Bucket: "devship",
+    Key: fileName,
+  }).promise();
+  console.log(response);
+}
