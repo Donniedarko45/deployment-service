@@ -40,6 +40,7 @@ export function Landing() {
               const res = await axios.post(`${BACKEND_UPLOAD_URL}/deploy`, {
                 repoUrl: repoUrl
               });
+	      {fix the redis part expecting id and parsing it into string but it expecting might be a repo url link}
               setUploadId(res.data.id);
               setUploading(false);
               const interval = setInterval(async () => {
