@@ -1,7 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import express from "express";
-
+import { Request, Response, NextFunction } from "express";
 // Load environment variables
 dotenv.config();
 
@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 
 // Add CORS headers
-app.use((req: any, res: any, next: any) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -26,7 +26,7 @@ app.use((req: any, res: any, next: any) => {
 });
 
 // match everything, no path‐to‐regexp parsing needed
-app.use(async (req: any, res: any) => {
+app.use(async (req: Request, res: Response) => {
   try {
     const host = req.hostname;
     const id = host.split(".")[0];
